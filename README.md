@@ -1,2 +1,2 @@
 # crypt
-Package crypt contains easy to use wrappers around Go's crypto packages
+Package crypt contains easy to use best practice crypto functions

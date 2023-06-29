@@ -8,7 +8,11 @@ import (
 	"io"
 )
 
-func EncryptAESGCM(key, plaintext []byte) ([]byte, error) {
+// Encrypt encrypts data using 256-bit AES-GCM. The resulting ciphertext provides
+// a check that the data hasn't been altered. See
+// https://github.com/gtank/cryptopasta/blob/master/encrypt.go and
+// https://www.alexedwards.net/blog/working-with-cookies-in-go#encrypted-cookies.
+func Encrypt(key, plaintext []byte) ([]byte, error) {
 	// Create a new AES cipher block from the secret key.
 	block, err := aes.NewCipher(key)
 	if err != nil {
@@ -35,7 +39,9 @@ func EncryptAESGCM(key, plaintext []byte) ([]byte, error) {
 	return gcm.Seal(nonce, nonce, plaintext, nil), nil
 }
 
-func DecryptAESGCM(key, ciphertext []byte) ([]byte, error) {
+// Decrypt decrypts data encrypted with Encrypt using 256-bit AES-GCM and checks
+// that the data wasn't altered.
+func Decrypt(key, ciphertext []byte) ([]byte, error) {
 	// Create a new AES cipher block from the secret key.
 	block, err := aes.NewCipher(key)
 	if err != nil {
@@ -55,7 +61,7 @@ func DecryptAESGCM(key, ciphertext []byte) ([]byte, error) {
 		return nil, errors.New("ciphertext too short")
 	}
 
-	// Split ciphertext in nonce and encrypted message and use gcm.Open() to
+	// Split ciphertext in nonce and encrypted data and use gcm.Open() to
 	// decrypt and authenticate the data.
 	return gcm.Open(nil, ciphertext[:nonceSize], ciphertext[nonceSize:], nil)
 }
