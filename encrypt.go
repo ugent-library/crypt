@@ -9,10 +9,11 @@ import (
 )
 
 // Encrypt encrypts data using 256-bit AES-GCM. The resulting ciphertext provides
-// a check that the data hasn't been altered. See
-// https://github.com/gtank/cryptopasta/blob/master/encrypt.go and
-// https://www.alexedwards.net/blog/working-with-cookies-in-go#encrypted-cookies.
+// a check that the data hasn't been altered.
 func Encrypt(key, plaintext []byte) ([]byte, error) {
+	// See https://github.com/gtank/cryptopasta/blob/master/encrypt.go and
+	// https://www.alexedwards.net/blog/working-with-cookies-in-go#encrypted-cookies.
+
 	// Create a new AES cipher block from the secret key.
 	block, err := aes.NewCipher(key)
 	if err != nil {
