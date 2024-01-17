@@ -4,6 +4,8 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
+	"encoding/base64"
+	"encoding/json"
 	"errors"
 	"io"
 )
@@ -65,4 +67,80 @@ func Decrypt(key, ciphertext []byte) ([]byte, error) {
 	// Split ciphertext in nonce and encrypted data and use gcm.Open() to
 	// decrypt and authenticate the data.
 	return gcm.Open(nil, ciphertext[:nonceSize], ciphertext[nonceSize:], nil)
+}
+
+func EncryptString(key []byte, plaintext string) (string, error) {
+	ciphertext, err := Encrypt(key, []byte(plaintext))
+	if err != nil {
+		return "", err
+	}
+	return base64.URLEncoding.EncodeToString(ciphertext), nil
+}
+
+func DecryptString(key []byte, encodedtext string) (string, error) {
+	ciphertext, err := base64.URLEncoding.DecodeString(encodedtext)
+	if err != nil {
+		return "", err
+	}
+	plaintext, err := Decrypt(key, ciphertext)
+	if err != nil {
+		return "", err
+	}
+	return string(plaintext), nil
+}
+
+func EncryptValue(key []byte, v any) (string, error) {
+	plaintext, err := json.Marshal(v)
+	if err != nil {
+		return "", err
+	}
+	ciphertext, err := Encrypt(key, plaintext)
+	if err != nil {
+		return "", err
+	}
+	return base64.URLEncoding.EncodeToString(ciphertext), nil
+}
+
+func DecryptValue(key []byte, encodedtext string, v any) error {
+	ciphertext, err := base64.URLEncoding.DecodeString(encodedtext)
+	if err != nil {
+		return err
+	}
+	plaintext, err := Decrypt(key, ciphertext)
+	if err != nil {
+		return err
+	}
+	return json.Unmarshal(plaintext, v)
+}
+
+type Crypt struct {
+	key []byte
+}
+
+func New(key []byte) *Crypt {
+	return &Crypt{key: key}
+}
+
+func (c *Crypt) Encrypt(plaintext []byte) ([]byte, error) {
+	return Encrypt(c.key, plaintext)
+}
+
+func (c *Crypt) Decrypt(ciphertext []byte) ([]byte, error) {
+	return Decrypt(c.key, ciphertext)
+}
+
+func (c *Crypt) EncryptString(plaintext string) (string, error) {
+	return EncryptString(c.key, plaintext)
+}
+
+func (c *Crypt) DecryptString(encodedtext string) (string, error) {
+	return DecryptString(c.key, encodedtext)
+}
+
+func (c *Crypt) EncryptValue(v any) (string, error) {
+	return EncryptValue(c.key, v)
+}
+
+func (c *Crypt) DecryptValue(encodedtext string, v any) error {
+	return DecryptValue(c.key, encodedtext, v)
 }
