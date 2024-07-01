@@ -2,7 +2,7 @@
 
 # ugent-library/crypt
 
-Package crypt contains easy to use best practice crypto functions.
+Package crypt contains easy to use best practice crypto and random value functions.
 
 ## Install
 

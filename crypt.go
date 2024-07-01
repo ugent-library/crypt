@@ -74,11 +74,11 @@ func EncryptString(key []byte, plaintext string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return base64.URLEncoding.EncodeToString(ciphertext), nil
+	return base64.RawURLEncoding.EncodeToString(ciphertext), nil
 }
 
 func DecryptString(key []byte, encodedtext string) (string, error) {
-	ciphertext, err := base64.URLEncoding.DecodeString(encodedtext)
+	ciphertext, err := base64.RawURLEncoding.DecodeString(encodedtext)
 	if err != nil {
 		return "", err
 	}
@@ -98,11 +98,11 @@ func EncryptValue(key []byte, v any) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return base64.URLEncoding.EncodeToString(ciphertext), nil
+	return base64.RawURLEncoding.EncodeToString(ciphertext), nil
 }
 
 func DecryptValue(key []byte, encodedtext string, v any) error {
-	ciphertext, err := base64.URLEncoding.DecodeString(encodedtext)
+	ciphertext, err := base64.RawURLEncoding.DecodeString(encodedtext)
 	if err != nil {
 		return err
 	}
