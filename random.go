@@ -2,22 +2,28 @@ package crypt
 
 import (
 	"crypto/rand"
-	"encoding/base64"
+	"math/big"
 )
 
 func RandomBytes(n int) ([]byte, error) {
-	b := make([]byte, n)
-	_, err := rand.Read(b)
+	bytes := make([]byte, n)
+	_, err := rand.Read(bytes)
 	if err != nil {
 		return nil, err
 	}
-	return b, nil
+	return bytes, nil
 }
 
 func RandomString(n int) (string, error) {
-	b, err := RandomBytes(n)
-	if err != nil {
-		return "", err
+	const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+	bytes := make([]byte, n)
+	for i := 0; i < n; i++ {
+		num, err := rand.Int(rand.Reader, big.NewInt(int64(len(chars))))
+		if err != nil {
+			return "", err
+		}
+		bytes[i] = chars[num.Int64()]
 	}
-	return base64.RawURLEncoding.EncodeToString(b), err
+
+	return string(bytes), nil
 }
